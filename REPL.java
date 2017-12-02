@@ -1,9 +1,12 @@
 import java.io.*;
+import java.util.*;
+import java.math.BigInteger;
 
 public class REPL{
 
 	private String [] KEYWORDS = {"QUIT", "LET", "PRINT"};
 	private char [] OPERATORS = {'+', '-', '/', '*'};
+	private int lineNum = 1;
 
 	public REPL(){
 
@@ -14,6 +17,7 @@ public class REPL{
 	 */
 	public void run(){
 		BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+		
 
 		while(true){
 			try{
@@ -23,12 +27,129 @@ public class REPL{
 				String keyword = "";
 
 				int result = checkValidKeyword(line);
+
+				if (result == -1){
+					System.err.println("Line " + lineNum + ": Keyword found in middle of expression.");
+					continue;
+				}
+
+				evaluateExpression(line, result);
+
 			}
 			catch (IOException ioe){
 
 			}
 
+			lineNum++;
 		}
+
+	}
+	
+
+	/**
+	* determines what to do depending on the keyword
+	* 0 - evaluate
+	* 1 - Quit
+	* 2 - Let
+	* 3 - evaluate, then Print
+	* @param line String []
+	* @param int keyword
+	*/
+	public void evaluateExpression(String [] line, int keyword){
+		switch (keyword){
+			case 0:
+				BigInteger result = evaluateRPN(line);
+				break;
+			case 1:
+				System.exit(0);
+				break;
+			case 2:
+				break;
+			case 3:
+				break;
+		}
+
+	}
+
+	/**
+	*
+	* @param line String []
+	* @return BigInteger - result of RPN evaluation. If -1, then operater applied to empty stack.
+	*/
+	public BigInteger evaluateRPN(String [] line){
+		Stack<BigInteger> stack = new Stack<BigInteger>();
+		BigInteger result = BigInteger.ZERO;
+
+		for (int i = 0; i < line.length; i++){
+
+			// if operator is found, need to pop two items from stack and apply operator to them
+			if (checkOperator(line[i])){
+				try{
+					BigInteger operand2 = stack.pop();
+					BigInteger operand1 = stack.pop();
+					BigInteger answer = evaluate(operand1, operand2, line[i]);
+					stack.push(answer);
+				}
+				catch (EmptyStackException ese){
+					System.err.println("Line " + lineNum + ": Operator " + line[i] + " applied to empty stack.");
+					return null;
+				}
+			}
+
+			try{
+				stack.push(new BigInteger(line[i]));
+			}
+			catch (NumberFormatException nfe){
+
+			}
+		}
+
+		
+		try{
+			result = stack.pop();
+		}
+		catch(EmptyStackException ese){
+			System.err.println("Line " + lineNum + ": Stack is empty.");
+		}
+
+		return result;
+	}
+
+	/**
+	* performs the given operator on the numbers gived
+	* @param o1 long
+	* @param o2 long
+	* @param operator String
+	* @return long - result of operation
+	*/
+	public BigInteger evaluate(BigInteger o1, BigInteger o2, String operator){
+		BigInteger result = BigInteger.ZERO;
+
+		switch (operator){
+			case "+":
+				result = o1.add(o2);
+				break;
+			case "-":
+				result = o1.subtract(o2);
+				break;
+			case "*":
+				result = o1.multiply(o2);
+				break;
+			case "/":
+				result = o1.divide(o2);
+				break;
+		}
+
+		return result;
+	}
+
+	/**
+	*	checks whether string is one of the valid operators
+	* @param s String
+	* @return boolean true if one of the valid operators
+	*/
+	public boolean checkOperator(String s){
+		return s.equals("+") || s.equals("-") || s.equals("*") || s.equals("/");
 	}
 
 	/**
