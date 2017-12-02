@@ -59,6 +59,10 @@ public class REPL{
 		switch (keyword){
 			case 0:
 				BigInteger result = evaluateRPN(line);
+				if (result != null)
+					System.out.println(result.toString());
+
+				System.out.println();
 				break;
 			case 1:
 				System.exit(0);
@@ -66,6 +70,11 @@ public class REPL{
 			case 2:
 				break;
 			case 3:
+				BigInteger ans = evaluateRPN(line);
+				if (ans != null)
+					System.out.println(ans.toString());
+
+				System.out.println();
 				break;
 		}
 
@@ -82,6 +91,11 @@ public class REPL{
 
 		for (int i = 0; i < line.length; i++){
 
+			// ignore the print statement and evaluate
+			if (line[i].toUpperCase().equals("PRINT")){
+				continue;
+			}
+
 			// if operator is found, need to pop two items from stack and apply operator to them
 			if (checkOperator(line[i])){
 				try{
@@ -90,27 +104,41 @@ public class REPL{
 					BigInteger answer = evaluate(operand1, operand2, line[i]);
 					stack.push(answer);
 				}
+				// catches empty stack
 				catch (EmptyStackException ese){
 					System.err.println("Line " + lineNum + ": Operator " + line[i] + " applied to empty stack.");
 					return null;
 				}
 			}
-
-			try{
-				stack.push(new BigInteger(line[i]));
-			}
-			catch (NumberFormatException nfe){
-
+			// put number onto stack since it isn't an operator
+			else{
+				try{
+					stack.push(new BigInteger(line[i]));
+				}
+				// catches unknown keywords found in line
+				catch (NumberFormatException nfe){
+					System.err.println("Line " + lineNum + ": " + "Unknown keyword " + line[i]);
+					return null;
+				}
 			}
 		}
 
-		
+		// if stack isn't 1 here, then there are elements still on stack
+		if (stack.size() != 1){
+			System.err.println("Line " + lineNum + ": " + stack.size() + " elements in stack after evaluation.");
+			return null;
+		}
+
+		// pop result off stack to return
 		try{
 			result = stack.pop();
 		}
 		catch(EmptyStackException ese){
 			System.err.println("Line " + lineNum + ": Stack is empty.");
+			return null;
 		}
+
+		
 
 		return result;
 	}
