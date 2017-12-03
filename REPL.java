@@ -1,13 +1,14 @@
 import java.io.*;
 import java.util.*;
 import java.math.BigInteger;
+import java.util.HashMap;
 
 public class REPL{
 
 	private String [] KEYWORDS = {"QUIT", "LET", "PRINT"};
 	private char [] OPERATORS = {'+', '-', '/', '*'};
 	private int lineNum = 1;
-
+	private HashMap<String, BigInteger> hashMap = new HashMap<String, BigInteger>();
 	public REPL(){
 
 	}
@@ -17,7 +18,6 @@ public class REPL{
 	 */
 	public void run(){
 		BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-		
 
 		while(true){
 			try{
@@ -44,7 +44,7 @@ public class REPL{
 		}
 
 	}
-	
+
 
 	/**
 	* determines what to do depending on the keyword
@@ -68,6 +68,9 @@ public class REPL{
 				System.exit(0);
 				break;
 			case 2:
+				BigInteger answer = evaluateRPN(line);
+				if (answer != null) System.out.println(answer.toString());
+				System.out.println();
 				break;
 			case 3:
 				BigInteger ans = evaluateRPN(line);
@@ -88,13 +91,25 @@ public class REPL{
 	public BigInteger evaluateRPN(String [] line){
 		Stack<BigInteger> stack = new Stack<BigInteger>();
 		BigInteger result = BigInteger.ZERO;
+		boolean isLet = false;
+		String variable = "";
 
 		for (int i = 0; i < line.length; i++){
+
+			if(isLet == true && line[1].length() == 1){
+				variable = line[i];
+				isLet = false;
+				continue;
+			}
 
 			// ignore the print statement and evaluate
 			if (line[i].toUpperCase().equals("PRINT")){
 				continue;
+			}else if(line[i].toUpperCase().equals("LET")){
+				isLet = true;
+				continue;
 			}
+
 
 			// if operator is found, need to pop two items from stack and apply operator to them
 			if (checkOperator(line[i])){
@@ -113,10 +128,17 @@ public class REPL{
 			// put number onto stack since it isn't an operator
 			else{
 				try{
-					stack.push(new BigInteger(line[i]));
+					if(line[i].length() == 1 && hashMap.containsKey(line[i].toUpperCase())){
+						stack.push(new BigInteger(hashMap.get(line[i]).toString()));
+					}else stack.push(new BigInteger(line[i]));
 				}
 				// catches unknown keywords found in line
 				catch (NumberFormatException nfe){
+					if(line[1].length() == 1 && hashMap.containsKey(line[1].toUpperCase()) == false){
+						System.err.println("Line " + lineNum + ": " + "Variable " + line[1] + " is not initialized.");
+						System.exit(1);
+					}
+					
 					System.err.println("Line " + lineNum + ": " + "Unknown keyword " + line[i]);
 					return null;
 				}
@@ -132,13 +154,16 @@ public class REPL{
 		// pop result off stack to return
 		try{
 			result = stack.pop();
+			if(!variable.equals("")){
+					hashMap.put(variable,result);
+			}
 		}
 		catch(EmptyStackException ese){
 			System.err.println("Line " + lineNum + ": Stack is empty.");
 			return null;
 		}
 
-		
+
 
 		return result;
 	}
