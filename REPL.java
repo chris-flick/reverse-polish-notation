@@ -7,6 +7,8 @@ public class REPL{
 
 	private String [] KEYWORDS = {"QUIT", "LET", "PRINT"};
 	private char [] OPERATORS = {'+', '-', '/', '*'};
+	private String [] alphabetArray = { "A", "B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"};
+	private List<String> ALPHABET = Arrays.asList(alphabetArray);
 	private int lineNum = 1;
 	private HashMap<String, BigInteger> hashMap = new HashMap<String, BigInteger>();
 	public REPL(){
@@ -24,6 +26,21 @@ public class REPL{
 				System.out.print("> ");
 				String in = input.readLine();
 				String [] line = in.toUpperCase().split("\\s+");
+
+				if(in.equals("")){
+					System.err.println("Line " + lineNum + ": Operator " + " NULL " + " applied to empty stack.");
+					continue;
+				}
+				/*
+				Somehow line[0] is valid when given an empty string. Guess its the way split works? 
+				if(line.length == 0){
+					System.err.println("Line " + lineNum + ": Operator " + " NULL " + " applied to empty stack.");
+					//Requirement states that if this is in REPL mode, we just need to display
+					//but the line will be ignored. Meaning no exit?
+					//System.exit(2);
+					continue;
+				}
+				*/
 				String keyword = "";
 
 				int result = checkValidKeyword(line);
@@ -34,7 +51,6 @@ public class REPL{
 				}
 
 				evaluateExpression(line, result);
-
 			}
 			catch (IOException ioe){
 
@@ -68,6 +84,7 @@ public class REPL{
 				System.exit(0);
 				break;
 			case 2:
+				//Same concept as Case 3. Evaluate then print.
 				BigInteger answer = evaluateRPN(line);
 				if (answer != null) System.out.println(answer.toString());
 				System.out.println();
@@ -95,17 +112,19 @@ public class REPL{
 		String variable = "";
 
 		for (int i = 0; i < line.length; i++){
-
-			if(isLet == true && line[1].length() == 1){
+			if(isLet == true && line[i].length() == 1 && ALPHABET.contains(line[i])){ //If the previous string is let, then this key must be a variable.
 				variable = line[i];
 				isLet = false;
 				continue;
+			}else if(isLet == true && line[i].length() == 1 && ALPHABET.contains(line[i]) == false){
+				System.out.println("Line " + lineNum + ": Not a valid variable!");
+				return null;
 			}
 
 			// ignore the print statement and evaluate
 			if (line[i].toUpperCase().equals("PRINT")){
 				continue;
-			}else if(line[i].toUpperCase().equals("LET")){
+			}else if(line[i].toUpperCase().equals("LET")){ //If it is let, we got to continue to the next iteration
 				isLet = true;
 				continue;
 			}
@@ -122,6 +141,9 @@ public class REPL{
 				// catches empty stack
 				catch (EmptyStackException ese){
 					System.err.println("Line " + lineNum + ": Operator " + line[i] + " applied to empty stack.");
+					//Requirement states that if this is in REPL mode, we just need to display
+					//but the line will be ignored. Meaning no exit?
+					//System.exit(2);
 					return null;
 				}
 			}
@@ -134,12 +156,16 @@ public class REPL{
 				}
 				// catches unknown keywords found in line
 				catch (NumberFormatException nfe){
-					if(line[1].length() == 1 && hashMap.containsKey(line[1].toUpperCase()) == false){
-						System.err.println("Line " + lineNum + ": " + "Variable " + line[1] + " is not initialized.");
-						System.exit(1);
+					if(line[i].length() == 1 && hashMap.containsKey(line[i].toUpperCase()) == false && ALPHABET.contains(line[i])){
+						System.err.println("Line " + lineNum + ": " + "Variable " + line[i] + " is not initialized.");
+						//Requirement states that if this is in REPL mode, we just need to display
+						//but the line will be ignored. Meaning no exit?
+						//System.exit(1);
+						return null;
 					}
-					
+					System.out.println(line.length);
 					System.err.println("Line " + lineNum + ": " + "Unknown keyword " + line[i]);
+					//System.exit(4);
 					return null;
 				}
 			}
@@ -148,6 +174,7 @@ public class REPL{
 		// if stack isn't 1 here, then there are elements still on stack
 		if (stack.size() != 1){
 			System.err.println("Line " + lineNum + ": " + stack.size() + " elements in stack after evaluation.");
+			//System.exit(3);
 			return null;
 		}
 
@@ -162,6 +189,7 @@ public class REPL{
 			System.err.println("Line " + lineNum + ": Stack is empty.");
 			return null;
 		}
+
 
 
 
