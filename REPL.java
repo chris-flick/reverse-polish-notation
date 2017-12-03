@@ -31,16 +31,7 @@ public class REPL{
 					System.err.println("Line " + lineNum + ": Operator " + " NULL " + " applied to empty stack.");
 					continue;
 				}
-				/*
-				Somehow line[0] is valid when given an empty string. Guess its the way split works? 
-				if(line.length == 0){
-					System.err.println("Line " + lineNum + ": Operator " + " NULL " + " applied to empty stack.");
-					//Requirement states that if this is in REPL mode, we just need to display
-					//but the line will be ignored. Meaning no exit?
-					//System.exit(2);
-					continue;
-				}
-				*/
+
 				String keyword = "";
 
 				int result = checkValidKeyword(line);
@@ -135,8 +126,12 @@ public class REPL{
 				try{
 					BigInteger operand2 = stack.pop();
 					BigInteger operand1 = stack.pop();
-					BigInteger answer = evaluate(operand1, operand2, line[i]);
-					stack.push(answer);
+					if(operand2.toString().equals("0") && line[i].equals("/")){
+						return null;
+					}else{
+						BigInteger answer = evaluate(operand1, operand2, line[i]);
+						stack.push(answer);
+					}
 				}
 				// catches empty stack
 				catch (EmptyStackException ese){
@@ -163,7 +158,6 @@ public class REPL{
 						//System.exit(1);
 						return null;
 					}
-					System.out.println(line.length);
 					System.err.println("Line " + lineNum + ": " + "Unknown keyword " + line[i]);
 					//System.exit(4);
 					return null;

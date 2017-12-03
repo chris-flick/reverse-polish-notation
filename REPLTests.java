@@ -12,6 +12,142 @@ public class REPLTests {
 	}
 
 	/*
+	*	Testing that evaluateRPM returns NULL when passed in C
+	*/
+	@Test
+	public void testREPLNULL(){
+		String testString = "C";
+		String[] splitTestString = testString.toUpperCase().split("\\s+");
+		assertNull(repl.evaluateRPN(splitTestString));
+	}
+
+	/*
+	* Test division by zero
+	*/
+	@Test
+	public void divisionByZero(){
+		String testString = "3 0 /";
+		String[] splitTestString = testString.toUpperCase().split("\\s+");
+		assertNull(repl.evaluateRPN(splitTestString));
+	}
+
+	/*
+	* Test if variable is properly set
+	*/
+	@Test
+	public void declareVariable(){
+		String testString = "LET C 5 5 +";
+		String[] splitTestString = testString.toUpperCase().split("\\s+");
+		assertEquals("10",repl.evaluateRPN(splitTestString).toString());
+	}
+
+	/*
+	* Test if variable holds value
+	*/
+	@Test
+	public void checkVariable(){
+		String testString = "LET C 5 5 +";
+		String[] splitTestString = testString.toUpperCase().split("\\s+");
+		repl.evaluateRPN(splitTestString);
+		testString = "C";
+		splitTestString = testString.toUpperCase().split("\\s+");
+		assertEquals("10",repl.evaluateRPN(splitTestString).toString());
+	}
+
+	/*
+	* Test if variable holds value and we can do addition with it
+	*/
+	@Test
+	public void checkVariableAddition(){
+		String testString = "LET C 5 5 +";
+		String[] splitTestString = testString.toUpperCase().split("\\s+");
+		repl.evaluateRPN(splitTestString);
+		testString = "C 5 +";
+		splitTestString = testString.toUpperCase().split("\\s+");
+		assertEquals("15",repl.evaluateRPN(splitTestString).toString());
+	}
+
+	/*
+	* Test if variable holds value and we can do subtraction with it
+	*/
+	@Test
+	public void checkVariableSubtraction(){
+		String testString = "LET C 5 5 +";
+		String[] splitTestString = testString.toUpperCase().split("\\s+");
+		repl.evaluateRPN(splitTestString);
+		testString = "C 5 -";
+		splitTestString = testString.toUpperCase().split("\\s+");
+		assertEquals("5",repl.evaluateRPN(splitTestString).toString());
+	}
+
+	/*
+	* Test if variable holds value and we can do multiplication with it
+	*/
+	@Test
+	public void checkVariableMultiplication(){
+		String testString = "LET C 5 5 +";
+		String[] splitTestString = testString.toUpperCase().split("\\s+");
+		repl.evaluateRPN(splitTestString);
+		testString = "C 5 *";
+		splitTestString = testString.toUpperCase().split("\\s+");
+		assertEquals("50",repl.evaluateRPN(splitTestString).toString());
+	}
+
+	/*
+	* Test if variable holds value and we can do division with it
+	*/
+	@Test
+	public void checkVariableDivision(){
+		String testString = "LET C 5 5 +";
+		String[] splitTestString = testString.toUpperCase().split("\\s+");
+		repl.evaluateRPN(splitTestString);
+		testString = "C 5 /";
+		splitTestString = testString.toUpperCase().split("\\s+");
+		assertEquals("2",repl.evaluateRPN(splitTestString).toString());
+	}
+
+	/*
+	* Test if we can set a variable to another variable
+	*/
+	@Test
+	public void checkVariableSetting(){
+		String testString = "LET C 5 5 +";
+		String[] splitTestString = testString.toUpperCase().split("\\s+");
+		repl.evaluateRPN(splitTestString);
+
+		testString = "lEt D C C +";
+		splitTestString = testString.toUpperCase().split("\\s+");
+		repl.evaluateRPN(splitTestString);
+
+		testString = "D";
+		splitTestString = testString.toUpperCase().split("\\s+");
+
+		assertEquals("20",repl.evaluateRPN(splitTestString).toString());
+	}
+
+	/*
+	* Test to see if improper variable will return null
+	*/
+
+	@Test
+	public void checkImproperVariableName(){
+		String testString = "LET CATS 5 5 +";
+		String[] splitTestString = testString.toUpperCase().split("\\s+");
+		assertNull(repl.evaluateRPN(splitTestString));
+	}
+
+	/*
+	* Test to see if improper variable will return null
+	*/
+	@Test
+	public void checkImproperVariableName2(){
+		String testString = "LET 5 5 5 +";
+		String[] splitTestString = testString.toUpperCase().split("\\s+");
+		assertNull(repl.evaluateRPN(splitTestString));
+	}
+
+
+	/*
 	*	Testing that checkKeywordsArray() returns the correct int for PRINT keyword
 	*/
 	@Test
