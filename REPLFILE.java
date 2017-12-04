@@ -3,7 +3,7 @@ import java.util.*;
 import java.math.BigInteger;
 import java.util.HashMap;
 
-public class REPL{
+public class REPLFILE{
 
 	private String [] KEYWORDS = {"QUIT", "LET", "PRINT"};
 	private char [] OPERATORS = {'+', '-', '/', '*'};
@@ -11,45 +11,52 @@ public class REPL{
 	private List<String> ALPHABET = Arrays.asList(alphabetArray);
 	private int lineNum = 1;
 	private HashMap<String, BigInteger> hashMap = new HashMap<String, BigInteger>();
-	public REPL(){
+	public REPLFILE(){
 
 	}
 
 	/**
 	 * read-eval-print-loop method
 	 */
-	public void run(){
-		BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-
-		while(true){
-			try{
-				System.out.print("> ");
-				String in = input.readLine();
-				String [] line = in.toUpperCase().split("\\s+");
-
-				if(in.equals("")){
-					continue;
-				}
-
-				String keyword = "";
-
-				int result = checkValidKeyword(line);
-
-				if (result == -1){
-					System.err.println("Line " + lineNum + ": Keyword found in middle of expression.");
-					continue;
-				}
-
-				evaluateExpression(line, result);
-			}
-			catch (IOException ioe){
-
-			}
-
-			lineNum++;
+	public void run(String[] args){
+		int numFileRead = 0;
+		if(args.length == 0){
+			System.out.println("No File Listed");
+			System.exit(0);
 		}
 
+		while(numFileRead < args.length){
+			Scanner reader = null;
+			try{
+				reader = new Scanner(new File(args[numFileRead]));
+			}catch(Exception e){
+				System.out.println("No File found under " + args[numFileRead]);
+				numFileRead++;
+				continue;
+			}
+			while(reader.hasNextLine()){
+					String in = reader.nextLine();
+					String [] line = in.toUpperCase().split("\\s+");
+
+					if(in.equals("")){
+						continue;
+					}
+
+					String keyword = "";
+
+					int result = checkValidKeyword(line);
+
+					if (result == -1){
+						System.err.println("Line " + lineNum + ": Keyword found in middle of expression.");
+						continue;
+					}
+
+					evaluateExpression(line, result);
+					lineNum++;
+			}
+			numFileRead++;
 	}
+}
 
 
 	/**
@@ -137,8 +144,7 @@ public class REPL{
 					System.err.println("Line " + lineNum + ": Operator " + line[i] + " applied to empty stack.");
 					//Requirement states that if this is in REPL mode, we just need to display
 					//but the line will be ignored. Meaning no exit?
-					//System.exit(2);
-					return null;
+					System.exit(2);
 				}
 			}
 			// put number onto stack since it isn't an operator
@@ -154,12 +160,10 @@ public class REPL{
 						System.err.println("Line " + lineNum + ": " + "Variable " + line[i] + " is not initialized.");
 						//Requirement states that if this is in REPL mode, we just need to display
 						//but the line will be ignored. Meaning no exit?
-						//System.exit(1);
-						return null;
+						System.exit(1);
 					}
 					System.err.println("Line " + lineNum + ": " + "Unknown keyword " + line[i]);
-					//System.exit(4);
-					return null;
+					System.exit(4);
 				}
 			}
 		}
@@ -167,8 +171,7 @@ public class REPL{
 		// if stack isn't 1 here, then there are elements still on stack
 		if (stack.size() != 1){
 			System.err.println("Line " + lineNum + ": " + stack.size() + " elements in stack after evaluation.");
-			//System.exit(3);
-			return null;
+			System.exit(3);
 		}
 
 		// pop result off stack to return
@@ -180,7 +183,7 @@ public class REPL{
 		}
 		catch(EmptyStackException ese){
 			System.err.println("Line " + lineNum + ": Stack is empty.");
-			return null;
+			System.exit(2);
 		}
 
 

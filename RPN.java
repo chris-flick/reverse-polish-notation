@@ -11,6 +11,9 @@ public class RPN{
 		if (args.length == 0){
 			REPL repl = new REPL();
 			repl.run();
+		}else{
+			REPLFILE replFile = new REPLFILE();
+			replFile.run(args);
 		}
 	}
 
