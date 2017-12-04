@@ -72,10 +72,10 @@ public class REPLFILE{
 		switch (keyword){
 			case 0:
 				BigInteger result = evaluateRPN(line);
-				if (result != null)
+				/*if (result != null)
 					System.out.println(result.toString());
 
-				System.out.println();
+				System.out.println();*/
 				break;
 			case 1:
 				System.exit(0);
@@ -83,8 +83,9 @@ public class REPLFILE{
 			case 2:
 				//Same concept as Case 3. Evaluate then print.
 				BigInteger answer = evaluateRPN(line);
-				if (answer != null) System.out.println(answer.toString());
-				System.out.println();
+/*				if (answer != null) 
+					System.out.println(answer.toString());
+				System.out.println();*/
 				break;
 			case 3:
 				BigInteger ans = evaluateRPN(line);

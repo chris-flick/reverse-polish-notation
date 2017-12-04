@@ -76,7 +76,8 @@ public class REPL{
 			case 2:
 				//Same concept as Case 3. Evaluate then print.
 				BigInteger answer = evaluateRPN(line);
-				if (answer != null) System.out.println(answer.toString());
+				if (answer != null) 
+					System.out.println(answer.toString());
 				System.out.println();
 				break;
 			case 3:
@@ -145,8 +146,10 @@ public class REPL{
 			else{
 				try{
 					if(line[i].length() == 1 && hashMap.containsKey(line[i].toUpperCase())){
-						stack.push(new BigInteger(hashMap.get(line[i]).toString()));
-					}else stack.push(new BigInteger(line[i]));
+						stack.push(new BigInteger(hashMap.get(line[i].toUpperCase()).toString()));
+					}
+					else 
+						stack.push(new BigInteger(line[i]));
 				}
 				// catches unknown keywords found in line
 				catch (NumberFormatException nfe){
@@ -178,8 +181,9 @@ public class REPL{
 					hashMap.put(variable,result);
 			}
 		}
+		// should only reach here if stack is empty while trying to use LET
 		catch(EmptyStackException ese){
-			System.err.println("Line " + lineNum + ": Stack is empty.");
+			System.err.println("Line " + lineNum + ": Operator LET applied to empty stack");
 			return null;
 		}
 
