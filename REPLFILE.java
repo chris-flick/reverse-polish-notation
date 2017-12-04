@@ -173,8 +173,10 @@ public class REPLFILE{
 
 		// if stack isn't 1 here, then there are elements still on stack
 		if (stack.size() != 1){
-			if (!let)
+			if (!let){
 				System.err.println("Line " + lineNum + ": " + stack.size() + " elements in stack after evaluation.");
+				System.exit(3);
+			}
 			else
 				System.err.println("Line " + lineNum + ": Operator LET applied to empty stack");
 
