@@ -11,6 +11,8 @@ public class REPL{
 	private List<String> ALPHABET = Arrays.asList(alphabetArray);
 	private int lineNum = 1;
 	private HashMap<String, BigInteger> hashMap = new HashMap<String, BigInteger>();
+	private boolean let = false;
+
 	public REPL(){
 
 	}
@@ -75,10 +77,12 @@ public class REPL{
 				break;
 			case 2:
 				//Same concept as Case 3. Evaluate then print.
+				let = true;
 				BigInteger answer = evaluateRPN(line);
 				if (answer != null) 
 					System.out.println(answer.toString());
 				System.out.println();
+				let = false;
 				break;
 			case 3:
 				BigInteger ans = evaluateRPN(line);
@@ -169,7 +173,11 @@ public class REPL{
 
 		// if stack isn't 1 here, then there are elements still on stack
 		if (stack.size() != 1){
-			System.err.println("Line " + lineNum + ": " + stack.size() + " elements in stack after evaluation.");
+			if (!let)
+				System.err.println("Line " + lineNum + ": " + stack.size() + " elements in stack after evaluation.");
+			else
+				System.err.println("Line " + lineNum + ": Operator LET applied to empty stack");
+
 			//System.exit(3);
 			return null;
 		}
@@ -183,7 +191,7 @@ public class REPL{
 		}
 		// should only reach here if stack is empty while trying to use LET
 		catch(EmptyStackException ese){
-			System.err.println("Line " + lineNum + ": Operator LET applied to empty stack");
+			System.err.println("Line " + lineNum + ": Stack is empty!");
 			return null;
 		}
 
