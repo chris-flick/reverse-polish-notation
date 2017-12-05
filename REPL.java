@@ -38,7 +38,7 @@ public class REPL{
 				int result = checkValidKeyword(line);
 
 				if (result == -1){
-					System.err.println("Line " + lineNum + ": Keyword found in middle of expression.");
+					System.err.println("Line " + lineNum + ": Could not evaluate expression.");
 					continue;
 				}
 
@@ -175,6 +175,11 @@ public class REPL{
 		if (stack.size() != 1){
 			if (!let)
 				System.err.println("Line " + lineNum + ": " + stack.size() + " elements in stack after evaluation.");
+			else if (stack.size() > 1)
+			{
+				System.err.println("Line " + lineNum + ": " + stack.size() + " elements in stack after evaluation.");
+				//System.exit(3);
+			}
 			else
 				System.err.println("Line " + lineNum + ": Operator LET applied to empty stack");
 

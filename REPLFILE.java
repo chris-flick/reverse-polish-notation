@@ -49,7 +49,7 @@ public class REPLFILE{
 					int result = checkValidKeyword(line);
 
 					if (result == -1){
-						System.err.println("Line " + lineNum + ": Keyword found in middle of expression.");
+						System.err.println("Line " + lineNum + ": Could not evaluate expression.");
 						continue;
 					}
 
@@ -174,6 +174,11 @@ public class REPLFILE{
 		// if stack isn't 1 here, then there are elements still on stack
 		if (stack.size() != 1){
 			if (!let){
+				System.err.println("Line " + lineNum + ": " + stack.size() + " elements in stack after evaluation.");
+				System.exit(3);
+			}
+			else if (stack.size() > 1)
+			{
 				System.err.println("Line " + lineNum + ": " + stack.size() + " elements in stack after evaluation.");
 				System.exit(3);
 			}
